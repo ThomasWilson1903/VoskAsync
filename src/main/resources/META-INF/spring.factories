@@ -1,0 +1,2 @@
+org.springframework.boot.env.EnvironmentPostProcessor=ru.twilson.voskasync.configuration.EnvPostProcessor
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=ru.twilson.voskasync.VoskAsyncAutoConfiguration

@@ -1,12 +1,13 @@
 package ru.twilson.voskasync.dto;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
 
 @Data
-@ToString
-public class TranscriptionDto {
-    private long id;
+@Builder
+public class TranscriptionRequest {
+
+    private long id = 0;
     private String queue;
     private String urlFile;
 }

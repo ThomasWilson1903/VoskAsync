@@ -1,3 +1,1 @@
-ru.twilson.voskasync.configuration.AsyncConfiguration
-ru.twilson.voskasync.configuration.RabbitMqConfiguration
-ru.twilson.voskasync.configuration.VoskConfiguration
+ru.twilson.voskasync.VoskAsyncAutoConfiguration

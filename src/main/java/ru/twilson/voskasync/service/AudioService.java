@@ -1,8 +1,9 @@
 package ru.twilson.voskasync.service;
 
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -15,8 +16,14 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-@UtilityClass
+@Service
 public class AudioService {
+
+    @Value("${ffmpeg.path}")
+    private String ffmpegPath;
+
+    @Value("${ffprobe.path}")
+    private String ffprobePath;
 
     /**
      * Разделяет аудио данные на части по паузам в речи
@@ -28,11 +35,11 @@ public class AudioService {
      * @param chunkMinDurationMs   минимальная длительность чанка (мс)
      * @return список аудио чанков
      */
-    public static List<byte[]> splitBySilence(byte[] audioBytes,
-                                              AudioFormat format,
-                                              float silenceThresholdDb,
-                                              int minSilenceDurationMs,
-                                              int chunkMinDurationMs) {
+    public List<byte[]> splitBySilence(byte[] audioBytes,
+                                       AudioFormat format,
+                                       float silenceThresholdDb,
+                                       int minSilenceDurationMs,
+                                       int chunkMinDurationMs) {
 
         List<byte[]> chunks = new ArrayList<>();
 
@@ -93,7 +100,7 @@ public class AudioService {
     /**
      * Вычисляет RMS (Root Mean Square) для аудио данных
      */
-    private static double calculateRms(byte[] audio, int offset, int length, int frameSize) {
+    private double calculateRms(byte[] audio, int offset, int length, int frameSize) {
         double sum = 0;
         int sampleCount = 0;
 
@@ -112,9 +119,9 @@ public class AudioService {
         return sampleCount > 0 ? Math.sqrt(sum / sampleCount) : 0;
     }
 
-    public static AudioFormat getAudioFormatFromFile(File voiceFile) throws Exception {
+    public AudioFormat getAudioFormatFromFile(File voiceFile) throws Exception {
         ProcessBuilder pb = new ProcessBuilder(
-                "ffprobe",
+                ffprobePath,
                 "-v", "error",
                 "-show_entries", "stream=sample_rate,channels,bits_per_sample",
                 "-of", "default=noprint_wrappers=1",
@@ -148,43 +155,43 @@ public class AudioService {
         );
     }
 
-    public static int detectSilenceThreshold(File audioFile) throws Exception {
+    public int detectSilenceThreshold(File audioFile) throws Exception {
 
-        // 1. Получаем аудиоданные
+        // Получаем аудиоданные
         AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
         AudioFormat format = audioStream.getFormat();
         byte[] audioData = audioStream.readAllBytes();
         audioStream.close();
 
-        // 2. Конвертируем в амплитуды (для 16-битного PCM)
+        // Конвертируем в амплитуды (для 16-битного PCM)
         double[] amplitudes = new double[audioData.length / 2];
         for (int i = 0; i < amplitudes.length; i++) {
             short sample = (short) ((audioData[i * 2 + 1] << 8) | (audioData[i * 2] & 0xFF));
             amplitudes[i] = sample / 32768.0; // Нормализация [-1.0, 1.0]
         }
 
-        // 3. Вычисляем RMS (среднеквадратичное значение)
+        // Вычисляем RMS (среднеквадратичное значение)
         double sumSquares = 0;
         for (double amp : amplitudes) {
             sumSquares += amp * amp;
         }
         double rms = Math.sqrt(sumSquares / amplitudes.length);
 
-        // 4. Преобразуем в децибелы (dBFS)
+        // Преобразуем в децибелы (dBFS)
         double dB = 20 * Math.log10(rms);
 
-        // 5. Определяем порог тишины (средний шум + запас)
-        int silenceThreshold = (int) Math.round(dB - 10); // На 10 dB ниже среднего
+        // Определяем порог тишины (средний шум + запас)
+        int silenceThreshold = (int) Math.round(dB - 10);
 
         return silenceThreshold;
     }
 
     @SneakyThrows
-    public static File convertOggToWav(File fileOgg) {
+    public File convertOggToWav(File fileOgg) {
         log.info("Получен файл для конвертации в формат .ogg");
         File fileWav = Files.createTempFile("converted_", ".wav").toFile();
         Process process = new ProcessBuilder(
-                "ffmpeg", "-i", fileOgg.getAbsolutePath(),
+                ffmpegPath, "-i", fileOgg.getAbsolutePath(),
                 "-acodec", "pcm_s16le", "-ar", "16000", "-ac", "1", "-y",
                 fileWav.getAbsolutePath()
         ).start();
@@ -202,9 +209,9 @@ public class AudioService {
     }
 
     @SneakyThrows
-    public static double getAudioDuration(File audioFile) {
+    public double getAudioDuration(File audioFile) {
         Process process = new ProcessBuilder(
-                "ffmpeg", "-i", audioFile.getAbsolutePath()
+                ffmpegPath, "-i", audioFile.getAbsolutePath()
         ).redirectErrorStream(true).start();
 
         try (BufferedReader reader = new BufferedReader(

@@ -18,15 +18,15 @@ public class AsyncConfiguration implements AsyncConfigurer {
     @Bean(name = "customTaskExecutor", destroyMethod = "shutdown")
     public ExecutorService threadPoolTaskExecutor() {
         int corePoolSize = Runtime.getRuntime().availableProcessors();
-
+        corePoolSize = corePoolSize > 1 ? corePoolSize - 1 : corePoolSize;
         return new ThreadPoolExecutor(
-                corePoolSize,                      // базовый размер пула
-                corePoolSize * 2,                  // максимальный размер пула
-                30L,                              // время простаивания лишних потоков (сек)
-                TimeUnit.SECONDS,                 // единицы измерения времени
-                new LinkedBlockingQueue<>(100),    // очередь задач
-                new CustomThreadFactory("app-task-"), // фабрика потоков
-                new ThreadPoolExecutor.CallerRunsPolicy() // политика переполнения
+                corePoolSize,
+                corePoolSize * 2,
+                30L,
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(100),
+                new CustomThreadFactory("app-task-"),
+                new ThreadPoolExecutor.CallerRunsPolicy()
         );
     }
 

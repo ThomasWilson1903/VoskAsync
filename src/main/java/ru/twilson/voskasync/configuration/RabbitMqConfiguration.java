@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnBean(VoskConfiguration.class)
+//@ConditionalOnBean(VoskConfiguration.class)
 public class RabbitMqConfiguration {
 
     public static final String QUEUE_NAME = "service.vps";

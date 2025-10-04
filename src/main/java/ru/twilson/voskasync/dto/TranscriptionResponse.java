@@ -7,7 +7,7 @@ import lombok.ToString;
 @Data
 @ToString
 @RequiredArgsConstructor
-public class ResponseDto {
+public class TranscriptionResponse {
     private final long id;
     private final String finalResult;
 }
