@@ -28,6 +28,7 @@ import static ru.twilson.voskasync.utils.Utils.splitList;
 @Service
 @RequiredArgsConstructor
 public class AudioProcessor {
+
     private final Model voskModel;
     private final RabbitAdmin rabbitAdmin;
     private final ExecutorService executor;
@@ -80,9 +81,6 @@ public class AudioProcessor {
 
     private int getConsumerCount() {
         QueueInformation queueInfo = rabbitAdmin.getQueueInfo(NAME_QUEUE_RABBITMQ);
-        if (queueInfo != null) {
-            return queueInfo.getConsumerCount();
-        }
-        return 0;
+        return queueInfo.getConsumerCount();
     }
 }
