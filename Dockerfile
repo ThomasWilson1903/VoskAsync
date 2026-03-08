@@ -11,6 +11,6 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* \
 
 WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder /app/target/*.jar /app/app.jar
 RUN ffmpeg -version
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "/app/app.jar"]

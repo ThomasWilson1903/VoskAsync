@@ -3,8 +3,10 @@ services:
     build: ./
     container_name: vosk
     environment:
-      VOSK_MODEL_PATH: ./vosk-models/vosk-model-small-ru-0.22
-      rabbitmq_host: rabbitmq
+      - VOSK_MODEL_PATH=/app/vosk-models/model
+      - rabbitmq_host=rabbitmq
+      - rabbitmq_username=${RABBITMQ_DEFAULT_USER:-admin}
+      - rabbitmq_password=${RABBITMQ_DEFAULT_PASS:-password}
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -20,8 +22,8 @@ services:
     volumes:
       - .rabbitmq_data:/var/lib/rabbitmq
     environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=password
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER:-admin}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS:-password}
       - RABBITMQ_DEFAULT_VHOST=/
       - RABBITMQ_LOGS=-
       - RABBITMQ_SASL_LOGS=-
