@@ -1,16 +1,16 @@
-# Используем официальный образ OpenJDK
+FROM maven:sapmachine AS builder
+WORKDIR /app
+COPY ./pom.xml .
+COPY ./src ./src
+RUN mvn clean install -DskipTests
+
 FROM eclipse-temurin:17-jdk
 # Устанавливаем FFmpeg
 RUN apt-get update && \
     apt-get install -y ffmpeg && \
-    rm -rf /var/lib/apt/lists/*
-# Устанавливаем рабочую директорию
+    rm -rf /var/lib/apt/lists/* \
+
 WORKDIR /app
-# Определяем аргумент для имени JAR-файла
-ARG JAR_FILE=./target/*.jar
-# Копируем файл JAR в контейнер
-COPY ${JAR_FILE} app.jar
-# Проверяем, что FFmpeg установился (опционально)
+COPY --from=builder /app/target/*.jar app.jar
 RUN ffmpeg -version
-# Указываем команду для запуска приложения
 CMD ["java", "-jar", "app.jar"]

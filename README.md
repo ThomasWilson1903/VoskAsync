@@ -29,6 +29,7 @@ cd VoskAsync
 mvn clean install
 
 # Качаем модель Vosk (например, русскую маленькую)
+cd vosk-models
 wget https://alphacephei.com/vosk/models/vosk-model-small-ru-0.22.zip
 unzip vosk-model-small-ru-0.22.zip && mv vosk-model-small-ru-0.22 model
 
