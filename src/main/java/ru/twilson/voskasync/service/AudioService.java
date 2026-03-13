@@ -3,6 +3,7 @@ package ru.twilson.voskasync.service;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.AudioFormat;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@ConditionalOnProperty(name = "voskasync.handling_type", havingValue = "LOCAL", matchIfMissing = true)
 public class AudioService {
 
     @Value("${ffmpeg.path}")

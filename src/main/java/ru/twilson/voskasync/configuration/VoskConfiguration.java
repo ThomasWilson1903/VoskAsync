@@ -11,7 +11,7 @@ import org.vosk.Model;
 @Slf4j
 @Configuration
 @ConditionalOnProperty(prefix = "vosk.model", name = {"path"})
-@ConditionalOnProperty(name = "vosk.handling.type", havingValue = "LOCAL", matchIfMissing = true)
+@ConditionalOnProperty(name = "voskasync.handling_type", havingValue = "LOCAL", matchIfMissing = true)
 public class VoskConfiguration {
 
     @Value("${vosk.model.path}")
