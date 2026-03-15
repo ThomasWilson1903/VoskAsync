@@ -5,16 +5,12 @@ spring:
     consumer:
       group-id: speech-workers
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       enable-auto-commit: false
       max-poll-records: 500
       fetch-min-bytes: 1024
       fetch-max-wait: 500
     # === PRODUCER ===
     producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       acks: 1
       retries: 10
       retry.backoff.ms: 500
